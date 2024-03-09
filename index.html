@@ -3,9 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Simulador de Pagos</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <h1>Simulador de Pagos</h1>
+
+    <div id="productos" class="card-container"></div>
+    <div id="carrito" class="carrito">
+        <h2>Carrito de Productos</h2>
+        <ul id="lista-carrito"></ul>
+        <div id="total-carrito"></div>
+        <div id="opciones-pago">
+            <button id="pagarEfectivo">Pagar en Efectivo</button>
+            <input type="number" id="cuotasInput" min="2" max="6" placeholder="Cuotas">
+            <button id="pagarCuotas">Pagar en Cuotas</button>
+        </div>
+    </div>
+
     <script src="script.js"></script>
+
+    <footer>
+        <nav class="copy">
+            &copy;2024 - Alexander Stiehr
+        </nav>
+        <nav class="redes">
+            <a href="https://www.linkedin.com/in/alexander-stiehr-43aa9416b/" target="_blank">LinkedIn</a>
+            <a href="https://github.com/AlexanderStiehr" target="_blank">GitHub</a>
+            <a href="https://wa.me/1156073907" target="_blank">Whatsapp</a>
+        </nav>
+    </footer>
+
 </body>
 </html>

@@ -1,66 +1,120 @@
 let productos = [
-    {id: 1, nombre: "Mouse Logitech", precio: 5000},
-    {id: 4, nombre: "Teclado Redragon", precio: 4000},
-    {id: 7, nombre: "Auriculares Rog Strix", precio: 12000},
-    {id: 10, nombre: "Monitor Level Up", precio: 50000},
-    {id: 11, nombre: "Monitor Sentey", precio: 30000},
-    {id: 13, nombre: "Parlantes Logitech", precio: 18000},
-    {id: 16, nombre: "Notebook Dell", precio: 250000}
+    {id: 1, nombre: "Mouse Logitech", precio: 5000, stock: 3, rutaImagen:"./images/mouse.png"},
+    {id: 4, nombre: "Teclado Redragon", precio: 4000, stock: 6, rutaImagen: "./images/teclado.png"},
+    {id: 7, nombre: "Auriculares Rog Strix", precio: 12000, stock: 4, rutaImagen: "./images/auriculares.png"},
+    {id: 10, nombre: "Monitor Level Up", precio: 50000, stock: 2, rutaImagen: "./images/monitor1.png"},
+    {id: 11, nombre: "Monitor Sentey", precio: 30000, stock: 5, rutaImagen: "./images/monitor2.png"},
+    {id: 13, nombre: "Parlantes Logitech", precio: 18000, stock: 2, rutaImagen: "./images/parlantes.png"},
+    {id: 16, nombre: "Notebook Dell", precio: 250000, stock: 1, rutaImagen: "./images/notebook.png"}
 ];
 
-alert("Este sitio sirve para calcular pagos en cuotas de nuestro catálogo de productos");
-let mensaje = "Ingrese una opción\n1 - Ver productos disponibles\n2 - Pago en efectivo\n3 - Pago en cuotas\n0 - Salir"; 
-let opcion
-
-function calcularImporteFinal(importe, cuotas) {
-    let recargo = 0;
-    if (cuotas === 2) {
-        recargo = 0.2;
-    } else if (cuotas === 3) {
-        recargo = 0.3;
-    } else if (cuotas === 4) {
-        recargo = 0.4;
-    } else if (cuotas === 5) {
-        recargo = 0.5;
-    } else if (cuotas === 6) {
-        recargo = 0.6;
-    } else {
-        alert("Cantidad de cuotas no válida. Por favor, elija de 2 a 6 cuotas.");
-        return;
-    }
-    const importeConRecargo = importe * (1 + recargo);
-    const importeFinalPorCuota = importeConRecargo / cuotas;
-    alert(`El importe final con un recargo del ${recargo * 100}% en ${cuotas} cuotas es de: $${importeConRecargo.toFixed(2)}\nEl importe por cuota es de: $${importeFinalPorCuota.toFixed(2)}`);
+function mostrarProductos() {
+    const productosDiv = document.getElementById("productos");
+    productosDiv.innerHTML = "";
+    productos.forEach(producto => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.id = `card-${producto.id}`;
+        card.innerHTML = `
+            <img src="${producto.rutaImagen}" alt="${producto.nombre}">
+            <h3>${producto.nombre}</h3>
+            <p>Precio: $${producto.precio.toFixed(2)}</p>
+            <p class="stock">Stock: ${producto.stock}</p> <!-- Mostrar el stock -->
+            <input type="number" class="cantidad-input" min="1" max="${producto.stock}" value="1"> <!-- Input para seleccionar cantidad -->
+            <button class="agregar-carrito-btn">Agregar al carrito</button> <!-- Botón para agregar al carrito -->
+        `;
+        productosDiv.appendChild(card);
+        const agregarCarritoBtn = card.querySelector('.agregar-carrito-btn');
+        agregarCarritoBtn.addEventListener("click", () => agregarAlCarrito(producto));
+    });
 }
 
-do {
-    opcion = Number(prompt(mensaje));
-    if (opcion === 1) {
-        let listaProductos = "Productos Disponibles:\n";
-        productos.forEach(producto => {
-            listaProductos += `${producto.id}. ${producto.nombre} - $${producto.precio.toFixed(2)}\n`;
-        });
-        alert(listaProductos);
-    } else if (opcion === 2) {
-        let idProducto = Number(prompt("Ingrese el ID del producto que desea comprar"));
-        let producto = productos.find(prod => prod.id === idProducto);
-        if (producto) {
-            alert(`El monto final de su producto (${producto.nombre}) es: $${producto.precio.toFixed(2)}`);
-        } else {
-            alert("ID de producto inválido. Por favor, elija un ID válido.");
-        }
-    } else if (opcion === 3) {
-        let idProducto = Number(prompt("Ingrese el ID del producto que desea comprar"));
-        let producto = productos.find(prod => prod.id === idProducto);
-        if (producto) {
-            let cuotas = Number(prompt("Ingrese la cantidad de cuotas en las que desea abonar"));
-            calcularImporteFinal(producto.precio, cuotas);
-        } else {
-            alert("ID de producto inválido. Por favor, elija un ID válido.");
-        }
-    } else if (opcion === 0) {
-        alert("Gracias por su visita, hasta luego!");
-    } else {
-        alert("Opción incorrecta, ingrese otra opción");
+function agregarAlCarrito(producto) {
+    const cantidadInput = document.getElementById(`card-${producto.id}`).querySelector(".cantidad-input");
+    const cantidad = parseInt(cantidadInput.value);
+    if (cantidad > producto.stock) {
+        alert("¡Lo sentimos! ¡Ha superado el stock disponible para este producto!");
+        return;
     }
-} while (opcion !== 0);
+    if (cantidad <= 0) {
+        alert("Por favor, seleccione una cantidad válida.");
+        return;
+    }
+    const carrito = document.getElementById("carrito");
+    const productoExistente = Array.from(carrito.children).find(elem => elem.dataset.id === producto.id.toString());
+
+    if (productoExistente) {
+        const cantidadElemento = productoExistente.querySelector(".cantidad");
+        cantidadElemento.textContent = parseInt(cantidadElemento.textContent) + cantidad;
+    } else {
+        const li = document.createElement("li");
+        li.dataset.id = producto.id;
+        li.innerHTML = `
+            ${producto.nombre} - $${(producto.precio * cantidad).toFixed(2)} <span class="cantidad">${cantidad}</span>
+        `;
+        carrito.appendChild(li);
+    }
+
+    producto.stock -= cantidad;
+    actualizarStockEnCard(producto);
+    calcularTotalCarrito();
+}
+
+function actualizarStockEnCard(producto) {
+    const stockElement = document.getElementById(`card-${producto.id}`).querySelector(".stock");
+    stockElement.textContent = `Stock: ${producto.stock}`;
+}
+
+function calcularTotalCarrito() {
+    const carrito = document.getElementById("carrito");
+    const totalCarrito = document.getElementById("total-carrito");
+    let total = 0;
+
+    Array.from(carrito.children).forEach(elem => {
+        const id = parseInt(elem.dataset.id);
+        const producto = productos.find(prod => prod.id === id);
+        if (producto) {
+            const cantidad = parseInt(elem.querySelector(".cantidad").textContent);
+            total += producto.precio * cantidad;
+        }
+    });
+
+    totalCarrito.textContent = `Total: $${total.toFixed(2)}`;
+}
+
+function pagarEnEfectivo() {
+    const totalCarritoElement = document.getElementById("total-carrito");
+    const total = parseFloat(totalCarritoElement.textContent.replace("Total: $", ""));
+    return total;
+}
+
+function pagarEnCuotas() {
+    const cuotasInput = document.getElementById("cuotasInput");
+    const cuotas = parseInt(cuotasInput.value);
+    if (cuotas >= 2 && cuotas <= 6) {
+        const totalCarritoElement = document.getElementById("total-carrito");
+        const totalCarrito = parseFloat(totalCarritoElement.textContent.replace("Total: $", ""));
+        const interes = (cuotas * 20) / 100;
+        const totalConInteres = totalCarrito * (1 + interes);
+        const importePorCuota = totalConInteres / cuotas;
+        return { totalConInteres: totalConInteres, importePorCuota: importePorCuota };
+    } else {
+        return { totalConInteres: 0, importePorCuota: 0 };
+    }
+}
+
+document.getElementById("pagarEfectivo").addEventListener("click", function() {
+    const total = pagarEnEfectivo();
+    alert("El total a pagar en efectivo es: " + total.toFixed(2));
+});
+
+document.getElementById("pagarCuotas").addEventListener("click", function() {
+    const { totalConInteres, importePorCuota } = pagarEnCuotas();
+    if (totalConInteres !== 0) {
+        alert(`El total a pagar en cuotas es: ${totalConInteres.toFixed(2)}. Importe por cuota: ${importePorCuota.toFixed(2)}`);
+    } else {
+        alert("Por favor, seleccione un número válido de cuotas (entre 2 y 6).");
+    }
+});
+
+window.onload = mostrarProductos;
