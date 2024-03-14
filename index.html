@@ -9,16 +9,29 @@
 <body>
     <h1>Simulador de Pagos</h1>
 
+    <p>Seleccione los productos con los que desee simular el pago</p>
+    <p>Tenga en cuenta los siguientes aclaraciones antes de simular el pago:
+        <ul>
+            <li>Únicamente podrá simular el pago con las unidades que se encuentren en stock</li>
+            <li>En caso de abonar en efectivo, el pago no tendrá recargo</li>
+            <li>En caso de abonar en cuotas, el pago tendrá un recargo proporcional a la cantidad de cuotas seleccionadas</li>
+        </ul>
+    </p>
+
     <div id="productos" class="card-container"></div>
     <div id="carrito" class="carrito">
         <h2>Carrito de Productos</h2>
         <ul id="lista-carrito"></ul>
+        <br>
         <div id="total-carrito"></div>
+        <br>
         <div id="opciones-pago">
             <button id="pagarEfectivo">Pagar en Efectivo</button>
-            <input type="number" id="cuotasInput" min="2" max="6" placeholder="Cuotas">
             <button id="pagarCuotas">Pagar en Cuotas</button>
+            <input type="number" id="cuotasInput" min="2" max="6" placeholder="Cuotas">
         </div>
+        <br>
+        <div id="mensaje" class="mensaje"></div>
     </div>
 
     <script src="script.js"></script>

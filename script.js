@@ -8,6 +8,11 @@ let productos = [
     {id: 16, nombre: "Notebook Dell", precio: 250000, stock: 1, rutaImagen: "./images/notebook.png"}
 ];
 
+const storedProductos = localStorage.getItem('productos');
+if (storedProductos) {
+    productos = JSON.parse(storedProductos);
+}
+
 function mostrarProductos() {
     const productosDiv = document.getElementById("productos");
     productosDiv.innerHTML = "";
@@ -19,9 +24,10 @@ function mostrarProductos() {
             <img src="${producto.rutaImagen}" alt="${producto.nombre}">
             <h3>${producto.nombre}</h3>
             <p>Precio: $${producto.precio.toFixed(2)}</p>
-            <p class="stock">Stock: ${producto.stock}</p> <!-- Mostrar el stock -->
-            <input type="number" class="cantidad-input" min="1" max="${producto.stock}" value="1"> <!-- Input para seleccionar cantidad -->
-            <button class="agregar-carrito-btn">Agregar al carrito</button> <!-- Botón para agregar al carrito -->
+            <p class="stock">Stock: ${producto.stock}</p> 
+            <p class="mensaje-stock"></p>
+            <input type="number" class="cantidad-input" min="1" max="${producto.stock}" value="1">
+            <button class="agregar-carrito-btn">Agregar al carrito</button>
         `;
         productosDiv.appendChild(card);
         const agregarCarritoBtn = card.querySelector('.agregar-carrito-btn');
@@ -33,11 +39,13 @@ function agregarAlCarrito(producto) {
     const cantidadInput = document.getElementById(`card-${producto.id}`).querySelector(".cantidad-input");
     const cantidad = parseInt(cantidadInput.value);
     if (cantidad > producto.stock) {
-        alert("¡Lo sentimos! ¡Ha superado el stock disponible para este producto!");
+        const mensajeStock = document.getElementById(`card-${producto.id}`).querySelector(".mensaje-stock");
+        mensajeStock.textContent = "¡Lo sentimos! ¡Ha superado el stock disponible para este producto!";
         return;
     }
     if (cantidad <= 0) {
-        alert("Por favor, seleccione una cantidad válida.");
+        const mensajeStock = document.getElementById(`card-${producto.id}`).querySelector(".mensaje-stock");
+        mensajeStock.textContent = "Por favor, seleccione una cantidad válida.";
         return;
     }
     const carrito = document.getElementById("carrito");
@@ -58,6 +66,8 @@ function agregarAlCarrito(producto) {
     producto.stock -= cantidad;
     actualizarStockEnCard(producto);
     calcularTotalCarrito();
+
+    localStorage.setItem('carrito', JSON.stringify(Array.from(carrito.children)));
 }
 
 function actualizarStockEnCard(producto) {
@@ -80,6 +90,8 @@ function calcularTotalCarrito() {
     });
 
     totalCarrito.textContent = `Total: $${total.toFixed(2)}`;
+
+    localStorage.setItem('totalCarrito', total.toFixed(2));
 }
 
 function pagarEnEfectivo() {
@@ -105,15 +117,15 @@ function pagarEnCuotas() {
 
 document.getElementById("pagarEfectivo").addEventListener("click", function() {
     const total = pagarEnEfectivo();
-    alert("El total a pagar en efectivo es: " + total.toFixed(2));
+    mensaje.innerHTML = "El total a pagar en efectivo es: " + total.toFixed(2);
 });
 
 document.getElementById("pagarCuotas").addEventListener("click", function() {
     const { totalConInteres, importePorCuota } = pagarEnCuotas();
     if (totalConInteres !== 0) {
-        alert(`El total a pagar en cuotas es: ${totalConInteres.toFixed(2)}. Importe por cuota: ${importePorCuota.toFixed(2)}`);
+        mensaje.innerHTML = `El total a pagar en cuotas es: ${totalConInteres.toFixed(2)}. Importe por cuota: ${importePorCuota.toFixed(2)}`;
     } else {
-        alert("Por favor, seleccione un número válido de cuotas (entre 2 y 6).");
+        mensaje.innerHTML = `Por favor, seleccione un número válido de cuotas (entre 2 y 6).`;
     }
 });
 

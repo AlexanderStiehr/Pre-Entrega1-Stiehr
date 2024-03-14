@@ -9,6 +9,16 @@ h1 {
     text-decoration: underline;
 }
 
+p {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 12px;
+}
+
+ul {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 12px;
+}
+
 .carrito-overlay {
     position: fixed;
     top: 0;
@@ -38,9 +48,23 @@ h1 {
 }
 
 .carrito button {
-    margin-top: 20px;
+    margin-top: 10px;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     text-align: center;
+}
+
+.mensaje-stock {
+    color: red;
+}
+
+.mensaje {
+    background-color: #78989bc4;
+    color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 16px;
 }
 
 .card-container {
@@ -48,24 +72,26 @@ h1 {
     flex-wrap: wrap;
     gap: 20px;
     justify-content: flex-start;
-    margin-right: 320px; 
+    margin-right: 300px; 
 }
 
 .carrito.children {
+    margin: 5px;
     text-align: left;
     padding: 5px;
+    font-size: 25px;
 }
 
 #opciones-pago button {
     background-color: #ffffff;
     color: rgb(0, 0, 0);
     border: none;
-    padding: 10px 20px;
+    padding: 8px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px;
-    margin-right: 10px;
+    font-size: 12px;
+    margin-right: 5px;
     cursor: pointer;
 }
 
