@@ -57,16 +57,6 @@ ul {
     color: red;
 }
 
-.mensaje {
-    background-color: #78989bc4;
-    color: #ffffff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 10px;
-    margin-top: 10px;
-    font-size: 16px;
-}
-
 .card-container {
     display: flex;
     flex-wrap: wrap;

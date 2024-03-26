@@ -1,22 +1,26 @@
-let productos = [
-    {id: 1, nombre: "Mouse Logitech", precio: 5000, stock: 3, rutaImagen:"./images/mouse.png"},
-    {id: 4, nombre: "Teclado Redragon", precio: 4000, stock: 6, rutaImagen: "./images/teclado.png"},
-    {id: 7, nombre: "Auriculares Rog Strix", precio: 12000, stock: 4, rutaImagen: "./images/auriculares.png"},
-    {id: 10, nombre: "Monitor Level Up", precio: 50000, stock: 2, rutaImagen: "./images/monitor1.png"},
-    {id: 11, nombre: "Monitor Sentey", precio: 30000, stock: 5, rutaImagen: "./images/monitor2.png"},
-    {id: 13, nombre: "Parlantes Logitech", precio: 18000, stock: 2, rutaImagen: "./images/parlantes.png"},
-    {id: 16, nombre: "Notebook Dell", precio: 250000, stock: 1, rutaImagen: "./images/notebook.png"}
-];
+async function pedirDatosAlBackend() {
+    try {
+        const resp = await fetch("lista.json");
+        const info = await resp.json();
+        localStorage.setItem("productos", JSON.stringify(info));
+        mostrarProductos(info);
+    } catch (error) {
+        lanzarTostada("Algo salió mal, error: " + error);
+    }
+}
 
-const storedProductos = localStorage.getItem('productos');
+let productos = [];
+
+const storedProductos = localStorage.getItem("productos");
+
 if (storedProductos) {
     productos = JSON.parse(storedProductos);
 }
 
-function mostrarProductos() {
+function mostrarProductos(productosData) {
     const productosDiv = document.getElementById("productos");
     productosDiv.innerHTML = "";
-    productos.forEach(producto => {
+    productosData.forEach(producto => {
         const card = document.createElement("div");
         card.classList.add("card");
         card.id = `card-${producto.id}`;
@@ -39,13 +43,11 @@ function agregarAlCarrito(producto) {
     const cantidadInput = document.getElementById(`card-${producto.id}`).querySelector(".cantidad-input");
     const cantidad = parseInt(cantidadInput.value);
     if (cantidad > producto.stock) {
-        const mensajeStock = document.getElementById(`card-${producto.id}`).querySelector(".mensaje-stock");
-        mensajeStock.textContent = "¡Lo sentimos! ¡Ha superado el stock disponible para este producto!";
+        lanzarTostada("¡Lo sentimos! ¡Ha superado el stock disponible para este producto!", 3000, "top", "center");
         return;
     }
     if (cantidad <= 0) {
-        const mensajeStock = document.getElementById(`card-${producto.id}`).querySelector(".mensaje-stock");
-        mensajeStock.textContent = "Por favor, seleccione una cantidad válida.";
+        lanzarTostada("Por favor, seleccione una cantidad válida.", 3000, "top", "center");
         return;
     }
     const carrito = document.getElementById("carrito");
@@ -63,11 +65,12 @@ function agregarAlCarrito(producto) {
         carrito.appendChild(li);
     }
 
+    lanzarTostada("Producto agregado al carrito", 3000, "top", "center")
     producto.stock -= cantidad;
     actualizarStockEnCard(producto);
     calcularTotalCarrito();
-
-    localStorage.setItem('carrito', JSON.stringify(Array.from(carrito.children)));
+    
+    localStorage.setItem("carrito", JSON.stringify(Array.from(carrito.children)));
 }
 
 function actualizarStockEnCard(producto) {
@@ -88,10 +91,8 @@ function calcularTotalCarrito() {
             total += producto.precio * cantidad;
         }
     });
-
     totalCarrito.textContent = `Total: $${total.toFixed(2)}`;
-
-    localStorage.setItem('totalCarrito', total.toFixed(2));
+    localStorage.setItem("totalCarrito", total.toString()); 
 }
 
 function pagarEnEfectivo() {
@@ -104,8 +105,7 @@ function pagarEnCuotas() {
     const cuotasInput = document.getElementById("cuotasInput");
     const cuotas = parseInt(cuotasInput.value);
     if (cuotas >= 2 && cuotas <= 6) {
-        const totalCarritoElement = document.getElementById("total-carrito");
-        const totalCarrito = parseFloat(totalCarritoElement.textContent.replace("Total: $", ""));
+        const totalCarrito = parseFloat(document.getElementById("total-carrito").textContent.replace("Total: $", ""));
         const interes = (cuotas * 20) / 100;
         const totalConInteres = totalCarrito * (1 + interes);
         const importePorCuota = totalConInteres / cuotas;
@@ -117,16 +117,42 @@ function pagarEnCuotas() {
 
 document.getElementById("pagarEfectivo").addEventListener("click", function() {
     const total = pagarEnEfectivo();
-    mensaje.innerHTML = "El total a pagar en efectivo es: " + total.toFixed(2);
+    lanzarAlerta("efectivo", total.toFixed(2));
 });
 
 document.getElementById("pagarCuotas").addEventListener("click", function() {
     const { totalConInteres, importePorCuota } = pagarEnCuotas();
-    if (totalConInteres !== 0) {
-        mensaje.innerHTML = `El total a pagar en cuotas es: ${totalConInteres.toFixed(2)}. Importe por cuota: ${importePorCuota.toFixed(2)}`;
+    const totalCarrito = parseFloat(document.getElementById("total-carrito").textContent.replace("Total: $", ""));
+    if (totalCarrito > 0 && totalConInteres !== 0) {
+        lanzarAlerta("cuotas", totalConInteres.toFixed(2) + ". Importe por cuota: " + importePorCuota.toFixed(2));
     } else {
-        mensaje.innerHTML = `Por favor, seleccione un número válido de cuotas (entre 2 y 6).`;
+        lanzarTostada("Por favor, seleccione un número válido de cuotas (entre 2 y 6)", 3000, "top", "right");
     }
 });
 
-window.onload = mostrarProductos;
+function lanzarAlerta(pago, total) {
+    Swal.fire({
+        title: "Su total a pagar en " + pago + " es de " + total,
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: "Finalizar compra",
+        denyButtonText: "Cancelar compra",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire("¡Gracias por su compra!", "", "success");
+        } else if (result.isDenied) {
+            Swal.fire("Compra cancelada", "", "error");
+        }
+    });
+}
+
+function lanzarTostada(text, duration, gravity, position) {
+    Toastify({
+        text: text,
+        duration: duration,
+        gravity: gravity,
+        position: position
+    }).showToast();
+}
+
+window.onload = pedirDatosAlBackend;

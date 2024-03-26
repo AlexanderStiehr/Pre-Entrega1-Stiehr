@@ -1,0 +1,51 @@
+[
+    {
+        "id": 1, 
+        "nombre": "Mouse Logitech", 
+        "precio": 5000, 
+        "stock": 3, 
+        "rutaImagen":"./images/mouse.png" 
+    },
+    {
+        "id": 4, 
+        "nombre": "Teclado Redragon", 
+        "precio": 4000, 
+        "stock": 6, 
+        "rutaImagen": "./images/teclado.png"
+    },
+    {
+        "id": 7, 
+        "nombre": "Auriculares Rog Strix", 
+        "precio": 12000, 
+        "stock": 4, 
+        "rutaImagen": "./images/auriculares.png"
+    },
+    {
+        "id": 10, 
+        "nombre": "Monitor Level Up", 
+        "precio": 50000, 
+        "stock": 2, 
+        "rutaImagen": "./images/monitor1.png"
+    },
+    {
+        "id": 11, 
+        "nombre": "Monitor Sentey", 
+        "precio": 30000, 
+        "stock": 5, 
+        "rutaImagen": "./images/monitor2.png"
+    },
+    {
+        "id": 13, 
+        "nombre": "Parlantes Logitech", 
+        "precio": 18000, 
+        "stock": 2, 
+        "rutaImagen": "./images/parlantes.png"
+    },
+    {
+        "id": 16, 
+        "nombre": "Notebook Dell", 
+        "precio": 250000, 
+        "stock": 1, 
+        "rutaImagen": "./images/notebook.png"
+    }
+]
